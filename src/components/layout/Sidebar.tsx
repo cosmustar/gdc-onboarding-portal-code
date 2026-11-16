@@ -62,7 +62,8 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
             <ShieldAlert className="h-3.5 w-3.5 text-amber-300" aria-hidden />
             Prototype
           </p>
-          All data is fictional. Manager filtering is a client-side simulation, not authorization.
+          {import.meta.env.VITE_DATA_SOURCE === 'csv' ? 'Data from a Power BI export (local file).' : 'All data is fictional.'} Manager filtering is a
+          client-side simulation, not authorization.
         </div>
       </aside>
     </>

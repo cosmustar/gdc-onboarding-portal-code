@@ -79,7 +79,8 @@ export interface AccessRequest {
   accessId: string;
   accessName: string;
   application: string;
-  category: AccessCatalogItem['category'];
+  /** 'Not available' when the source (e.g. Power BI export) has no category. */
+  category: AccessCatalogItem['category'] | 'Not available';
   employeeId: string;
   status: AccessStatus;
   /**

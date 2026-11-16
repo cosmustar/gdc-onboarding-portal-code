@@ -65,3 +65,29 @@ Ordem cronológica, do mais antigo para o mais recente. As datas vêm de registr
   - `npm run build` sem erros;
   - 46 de 46 testes de navegador aprovados;
   - capturas de tela inspecionadas (B-004, B-005 e B-006 confirmados).
+
+## 2026-11-16 — Leitura de dados reais exportados do Power BI
+- **Motivo:** pedido do usuário para usar os dados reais (D-017). O usuário vai aplicar a mudança no notebook da empresa, a partir de um guia.
+- **Criados:**
+  - `src/services/csv/csvConfig.ts`: nomes das colunas, tradução dos status, formato de data e unidade de negócio;
+  - `src/services/csv/parseCsv.ts`: leitor de CSV sem dependência externa (vírgula ou ponto e vírgula, aspas, BOM);
+  - `src/services/csv/CsvOnboardingDataService.ts`;
+  - `docs/GUIA_DADOS_REAIS.md`: passo a passo para o notebook da empresa.
+- **Modificados:**
+  - `src/services/index.ts`: escolhe a fonte de dados pela variável `VITE_DATA_SOURCE`;
+  - `src/types/models.ts`: `category` aceita "Not available";
+  - `src/components/layout/Sidebar.tsx`: o aviso "All data is fictional" muda no modo CSV;
+  - `.gitignore`: passa a ignorar `public/real-data/`.
+- **Comportamento padrão:** inalterado. Sem `.env.local`, o portal continua com os dados fictícios.
+- **Testes executados (2026-11-16, ~17h50):**
+  - `npm run build` sem erros, nos dois modos.
+  - **Modo CSV**, com arquivos **fictícios** criados com as colunas informadas pelo usuário: 14 de 14 verificações aprovadas. Foram cobertos:
+    - colaboradores carregados e gestores derivados;
+    - Request ID duplicado;
+    - acesso de colaborador inexistente ignorado;
+    - status desconhecido → Unverifiable; aprovação rejeitada → Rejected; aprovação pendente → Pending Approval;
+    - colaborador sem acessos → Not Requested in IDC;
+    - avisos no console para unidade, data inválida, status e colaborador inexistente.
+  - **Mensagens de erro na tela** verificadas para "arquivo ausente" e "coluna não encontrada".
+  - **Modo fictício:** 46 de 46 testes originais aprovados (executados duas vezes).
+  - **Não testado:** com os arquivos reais do Power BI (não disponíveis nesta máquina).

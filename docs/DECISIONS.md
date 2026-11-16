@@ -135,3 +135,34 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
   - (a) manter fora do projeto;
   - (b) versionar em `tests/e2e/` e adicionar `puppeteer-core` como dependência de desenvolvimento.
 - **Status:** Proposta. **Aguarda decisão do usuário.** Nada foi alterado no projeto.
+
+### D-017 — Usar dados reais a partir de um relatório exportado do Power BI
+- **Necessidade:** o usuário quer que o portal mostre os colaboradores e acessos reais, no lugar dos dados fictícios.
+- **Contexto informado pelo usuário (2026-11-16):**
+  - o dashboard é Power BI, conectado diretamente ao banco de dados;
+  - o usuário vai exportar um relatório do Power BI; exportar é só leitura e não altera o banco;
+  - o portal vai rodar no notebook da empresa;
+  - os mesmos dados já ficam visíveis para os managers no dashboard.
+- **Consequência para as regras anteriores:** substitui, para a fonte de dados, a restrição original "não usar dados corporativos reais". A regra de **não registrar dados reais na documentação nem no Git** continua valendo.
+- **Alternativas avaliadas:**
+  - (A) arquivo exportado (CSV);
+  - (B) backend conectado ao banco;
+  - (C) API do Power BI.
+  - O usuário escolheu (A).
+- **Colunas informadas pelo usuário:** três tabelas (Upcoming Start, Employee e Access). Ver `docs/GUIA_DADOS_REAIS.md`.
+- **Implementação (2026-11-16):**
+  - `src/services/csv/` lê `public/real-data/employees.csv` e `accesses.csv`;
+  - é ativada por `VITE_DATA_SOURCE=csv` no arquivo `.env.local`; sem ele, o portal continua com os dados fictícios.
+- **Escolhas do desenvolvedor — Proposta (implementada), aguardando validação:**
+  - **Tabelas:** a tabela "Upcoming Start" não é usada; os próximos colaboradores são derivados da tabela Employee.
+  - **Onboarding:** a coluna "Onboarding" do Power BI não é usada; o portal calcula o status pela regra D-004.
+  - **Gestores:** são criados a partir da coluna Manager. O ID é gerado pelo nome.
+  - **Ligação acesso → colaborador:** pela coluna Name de Access, comparada com o nome (ou o LAN ID) do colaborador. Em nome duplicado, o desempate é pela coluna Manager.
+  - **"Access Approval":** tratada como o nome do aprovador pendente (**hipótese**).
+  - **Status:** combinação de "Status Provisioning" e "Status Approval" via `STATUS_MAPPING`. Os valores foram escritos **sem conhecer os valores reais**. Valores desconhecidos viram "Unverifiable", com aviso no console.
+  - **Committed:** como não há coluna de confirmação, `COMMITTED_COUNTS_AS_CONFIRMED = false` (mantém a regra D-004).
+  - **Unidade de negócio:** lida da coluna Department. Se não contiver EMS ou ESS, usa EMS, com aviso.
+  - **Request ID repetido:** recebe o sufixo `-2`, `-3`…
+  - **Category:** passou a aceitar o valor "Not available" (`src/types/models.ts`).
+- **Data:** 2026-11-16.
+- **Status:** Aprovada (decisão do usuário de usar a exportação). Detalhes do mapeamento: Proposta (implementada).

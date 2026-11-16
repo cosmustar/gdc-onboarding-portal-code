@@ -1,7 +1,7 @@
 # CURRENT_STATE — Estado atual
 
 > **Documento principal de continuidade. Leia este primeiro.**
-> Atualizado em: 2026-11-16. Último commit verificado: `a7aa926`.
+> Atualizado em: 2026-11-16. Último commit verificado: `2c86e8e`.
 
 ## Resumo
 O portal está **funcional para demonstração local**. A última verificação foi em 2026-11-16 às 14h40:
@@ -44,13 +44,16 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 - **Responsividade no celular:** o layout funciona em 390px, mas as tabelas largas rolam horizontalmente dentro do card. Não há layout de cartões para o celular.
 - **Fonte Inter:** depende do Google Fonts (internet).
 
+- **Dados reais via exportação do Power BI (D-017):** implementado e testado só com arquivos fictícios. **Ainda não validado com os arquivos reais.** Para ativar, siga `docs/GUIA_DADOS_REAIS.md`.
+
 ## Planejado / não implementado
 - Integração real: Okta OIDC, backend (BFF), IDC, ServiceNow, RH. **Apenas documentada no README.**
 - `HttpOnboardingDataService`: não existe.
 
 ## Últimas mudanças
-1. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
-2. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
+1. 2026-11-16: leitura dos CSVs exportados do Power BI (`src/services/csv/`), ativada por `.env.local`. O padrão continua sendo os dados fictícios.
+2. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
+3. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
 
 ## Erros e pendências conhecidos
 - **B-001:** a correção permanente do PATH (`~/.zprofile`) não tem confirmação de que foi aplicada.
@@ -61,6 +64,12 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 2. **KPI "Pending Accesses"** conta todos os itens não concluídos, não só "Pending" (D-009).
 3. **Testes:** versionar no projeto ou manter fora (D-016)?
 4. Decisões marcadas como "Proposta (implementada)" em `DECISIONS.md` (D-006 a D-012), que ainda não têm aprovação explícita.
+5. **Dados reais (D-017):**
+   - valores reais de "Status Provisioning" e "Status Approval";
+   - significado de "Access Approval";
+   - qual coluna indica EMS ou ESS;
+   - formato das datas;
+   - se o onboarding calculado bate com a coluna "Onboarding" do Power BI.
 
 ## Observações (sem ação tomada)
 - **Código sem uso:** `src/hooks/useDebouncedValue.ts` (o hook inteiro), `isAccessOutstanding` em `src/domain/status.ts` e `accessStatusSlugOf` em `src/domain/filters.ts`. Mantidos; remover só com autorização.
@@ -83,6 +92,7 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 | Páginas | `src/pages/*.tsx` |
 | Cores / tema | `tailwind.config.js`, `src/index.css` |
 | Trocar mock por API | `src/services/index.ts` |
+| Dados reais (CSV do Power BI) | `src/services/csv/csvConfig.ts`, `docs/GUIA_DADOS_REAIS.md` |
 
 ## Como verificar o estado (comandos)
 ```bash

@@ -4,3 +4,6 @@ dist
 .DS_Store
 .env*
 !.env.example
+
+# Real data exported from Power BI — never commit
+public/real-data/
