@@ -100,11 +100,11 @@ README.md                   instalação, uso, regras e arquitetura futura
 
 | Regra | Definição atual |
 |---|---|
-| **Acesso concluído** | `Finished`; ou `Committed` **com** `availabilityConfirmed = true` |
+| **Acesso concluído** (KPI "Pending Accesses" e filtros de Accesses) | `Finished`; ou `Committed` **com** `availabilityConfirmed = true` |
 | Acesso não concluído | Pending, Pending Approval, Provisioning, Failed, Rejected, Unverifiable, Committed sem confirmação |
 | **Onboarding "Not Requested in IDC"** | colaborador sem nenhum item de solicitação |
-| **Onboarding "Finished"** | ≥ 1 item **e** todos concluídos |
-| **Onboarding "Pending"** | ≥ 1 item não concluído |
+| **Onboarding "Pending"** | ≥ 1 item pendente: Pending Approval, Pending ou Provisioning (D-018) |
+| **Onboarding "Finished"** | há itens e nenhum está pendente. Finished, Committed, Rejected, Expired, Failed e Unverifiable contam como encerrados. Com aprovação Rejected ou Expired, o "Pending" do provisionamento (padrão do IDC) é ignorado (D-018). Não significa que todos os acessos foram concedidos |
 | **Dispositivo** | nome preenchido → "Device Assigned"; nulo/vazio → "Not Assigned". **Não** comprova entrega física |
 | **Aprovador pendente** | exibido apenas em `Pending Approval`; sem nome → "Not available"; outros status → "Not applicable" |
 | **KPI "Pending Accesses"** | conta **todos os itens não concluídos**, não só o status "Pending". Ver DECISIONS D-009 |

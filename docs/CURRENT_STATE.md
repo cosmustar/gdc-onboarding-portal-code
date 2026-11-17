@@ -37,10 +37,11 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 - [x] A troca de usuário limpa os filtros. Filtros que não existem no novo escopo são descartados.
 - [x] Estados de carregamento (skeleton), vazio e erro (simular com `?simulateError=1`).
 - [x] Sem rolagem horizontal da página em 390px e 1024px.
-- [x] Dataset fictício: 26 colaboradores, 6 gestores, 116 solicitações.
+- [x] Dataset fictício: 26 colaboradores, 6 gestores, 116 solicitações. Onboarding (regra D-018): Finished 10, Pending 13, Not Requested 3.
 - [x] README com instalação, regras e arquitetura futura (Okta, IDC, ServiceNow, RH).
 
 ## Parcialmente implementado
+- **Notebook:** as tabelas cabem inteiras a partir de 1366px de largura (B-008). Em 1280px ainda há rolagem dentro do card.
 - **Responsividade no celular:** o layout funciona em 390px, mas as tabelas largas rolam horizontalmente dentro do card. Não há layout de cartões para o celular.
 - **Fonte Inter:** depende do Google Fonts (internet).
 
@@ -51,17 +52,20 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 - `HttpOnboardingDataService`: não existe.
 
 ## Últimas mudanças
-1. 2026-11-16: leitura dos CSVs exportados do Power BI (`src/services/csv/`), ativada por `.env.local`. O padrão continua sendo os dados fictícios.
-2. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
-3. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
+1. 2026-11-16: nova regra de Onboarding Status definida pelo usuário (D-018). Rejected e Expired encerram a solicitação mesmo com o provisionamento em Pending.
+2. 2026-11-16: paginação limitada a 7 posições (B-010, aguardando validação). B-009 foi revertido (diagnóstico errado).
+3. 2026-11-16: tabelas compactadas para caber em notebooks (B-008).
+4. 2026-11-16: leitura dos CSVs exportados do Power BI (`src/services/csv/`), ativada por `.env.local`. O padrão continua sendo os dados fictícios.
+5. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
+6. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
 
 ## Erros e pendências conhecidos
 - **B-001:** a correção permanente do PATH (`~/.zprofile`) não tem confirmação de que foi aplicada.
-- **T-003:** o script de teste falha entre 22h e 23h59 (expressão da saudação). A aplicação está correta.
+- **B-010:** paginação estourava com muitas páginas. Corrigido; falta validar com os dados reais.
 
 ## Pontos que precisam de validação do usuário
 1. **Regras de onboarding e de acesso concluído** versus a lógica do **Power BI** (D-004).
-2. **KPI "Pending Accesses"** conta todos os itens não concluídos, não só "Pending" (D-009).
+2. **KPI "Pending Accesses"** conta todos os itens não concluídos, não só "Pending" (D-009). **Desde a D-018:** o KPI e os filtros de Accesses seguem a regra antiga, e o Onboarding Status segue a nova. Alinhar?
 3. **Testes:** versionar no projeto ou manter fora (D-016)?
 4. Decisões marcadas como "Proposta (implementada)" em `DECISIONS.md` (D-006 a D-012), que ainda não têm aprovação explícita.
 5. **Dados reais (D-017):**

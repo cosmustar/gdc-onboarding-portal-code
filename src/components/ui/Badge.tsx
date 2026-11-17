@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, CircleDashed, CircleSlash, Clock, HelpCircle, Laptop, Loader2, MinusCircle, ShieldCheck, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, CircleDashed, CircleSlash, Clock, HelpCircle, Laptop, Loader2, MinusCircle, ShieldCheck, TimerOff, XCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ACCESS_STATUS_RULES, ONBOARDING_TONE, type DeviceAssignment, type Tone } from '../../domain/status';
 import type { AccessStatus, OnboardingStatus } from '../../types/models';
@@ -50,6 +50,7 @@ const ACCESS_ICON: Record<AccessStatus, ReactNode> = {
   Provisioning: <Loader2 className={iconCls} aria-hidden />,
   Failed: <XCircle className={iconCls} aria-hidden />,
   Rejected: <CircleSlash className={iconCls} aria-hidden />,
+  Expired: <TimerOff className={iconCls} aria-hidden />,
   Unverifiable: <HelpCircle className={iconCls} aria-hidden />,
 };
 

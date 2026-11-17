@@ -99,7 +99,7 @@ export function DataTable<T>({
                       <button
                         type="button"
                         onClick={() => toggleSort(col.key)}
-                        className={cn('-mx-1 inline-flex items-center gap-1 rounded px-1 uppercase hover:text-navy-900 focus-ring', active && 'text-navy-900')}
+                        className={cn('-mx-1 inline-flex items-center gap-1 rounded px-1 text-left uppercase hover:text-navy-900 focus-ring', active && 'text-navy-900')}
                       >
                         {col.header}
                         {active ? (
@@ -175,15 +175,21 @@ export function DataTable<T>({
             <span className="font-medium text-navy-900">{sorted.length}</span>
           </span>
           {pageCount > 1 && (
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <PageButton label="Previous page" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>
                 <ChevronLeft className="h-4 w-4" />
               </PageButton>
-              {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
-                <PageButton key={p} label={`Page ${p}`} current={p === currentPage} onClick={() => setPage(p)}>
-                  {p}
-                </PageButton>
-              ))}
+              {pageItems(currentPage, pageCount).map((p, i) =>
+                p === 'gap' ? (
+                  <span key={`gap-${i}`} className="px-1 text-slate-400" aria-hidden>
+                    …
+                  </span>
+                ) : (
+                  <PageButton key={p} label={`Page ${p}`} current={p === currentPage} onClick={() => setPage(p)}>
+                    {p}
+                  </PageButton>
+                ),
+              )}
               <PageButton label="Next page" disabled={currentPage === pageCount} onClick={() => setPage(currentPage + 1)}>
                 <ChevronRight className="h-4 w-4" />
               </PageButton>
@@ -211,4 +217,15 @@ function PageButton({ children, label, onClick, disabled, current }: { children:
       {children}
     </button>
   );
+}
+
+/**
+ * Page numbers to show: never more than 7 slots, whatever the page count.
+ * e.g. 1 2 3 4 5 … 250 | 1 … 49 50 51 … 250 | 1 … 246 247 248 249 250
+ */
+function pageItems(current: number, count: number): (number | 'gap')[] {
+  if (count <= 7) return Array.from({ length: count }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, 'gap', count];
+  if (current >= count - 3) return [1, 'gap', count - 4, count - 3, count - 2, count - 1, count];
+  return [1, 'gap', current - 1, current, current + 1, 'gap', count];
 }

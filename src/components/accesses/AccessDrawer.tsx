@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleAlert, UserRound } from 'lucide-react';
+import { CheckCircle2, CircleAlert, CircleMinus, UserRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { AccessView } from '../../domain/enrich';
 import { ACCESS_STATUS_RULES, approverDisplay } from '../../domain/status';
@@ -12,6 +12,33 @@ export function AccessDrawer({ access, onClose }: { access: AccessView | null; o
   if (!access) return null;
   const approver = approverDisplay(access);
   const rule = ACCESS_STATUS_RULES[access.status];
+  // Effect of this item on the employee's onboarding status (rule D-018).
+  const effect = access.keepsOnboardingPending
+    ? {
+        tone: 'border-amber-200 bg-amber-50/60',
+        Icon: CircleAlert,
+        iconClass: 'text-amber-600',
+        title: 'Keeps onboarding pending',
+        text: rule.description,
+      }
+    : access.status === 'Finished' || access.status === 'Committed'
+      ? {
+          tone: 'border-emerald-200 bg-emerald-50/60',
+          Icon: CheckCircle2,
+          iconClass: 'text-emerald-600',
+          title: 'Done for onboarding',
+          text:
+            access.status === 'Committed'
+              ? 'Committed: approved and provisioned. Usable even if not formally closed in IDC.'
+              : rule.description,
+        }
+      : {
+          tone: 'border-slate-200 bg-slate-50',
+          Icon: CircleMinus,
+          iconClass: 'text-slate-500',
+          title: 'Closed for onboarding — access not granted',
+          text: `${rule.description} Does not keep onboarding pending.`,
+        };
 
   return (
     <Drawer
@@ -35,21 +62,11 @@ export function AccessDrawer({ access, onClose }: { access: AccessView | null; o
         </>
       }
     >
-      <div className={`flex gap-3 rounded-lg border p-4 ${access.isCompleted ? 'border-emerald-200 bg-emerald-50/60' : 'border-amber-200 bg-amber-50/60'}`}>
-        {access.isCompleted ? (
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
-        ) : (
-          <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
-        )}
+      <div className={`flex gap-3 rounded-lg border p-4 ${effect.tone}`}>
+        <effect.Icon className={`mt-0.5 h-5 w-5 shrink-0 ${effect.iconClass}`} aria-hidden />
         <div className="text-sm">
-          <p className="font-medium text-navy-900">{access.isCompleted ? 'Counts as completed for onboarding' : 'Requires further action'}</p>
-          <p className="mt-0.5 text-slate-600">
-            {access.status === 'Committed'
-              ? access.availabilityConfirmed
-                ? 'Committed and availability confirmed by the target system.'
-                : 'Committed, but availability is not confirmed. Treated as not completed.'
-              : rule.description}
-          </p>
+          <p className="font-medium text-navy-900">{effect.title}</p>
+          <p className="mt-0.5 text-slate-600">{effect.text}</p>
         </div>
       </div>
 

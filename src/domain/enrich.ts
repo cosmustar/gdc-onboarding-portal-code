@@ -5,7 +5,7 @@
 import type { AccessRequest, BusinessUnit, Employee, Manager, OnboardingStatus } from '../types/models';
 import { BUSINESS_UNITS } from '../types/models';
 import { isFutureDate } from '../utils/date';
-import { calculateOnboardingStatus, getDeviceAssignment, isAccessCompleted, type DeviceAssignment } from './status';
+import { calculateOnboardingStatus, getDeviceAssignment, isAccessCompleted, keepsOnboardingPending, type DeviceAssignment } from './status';
 
 export interface EmployeeView extends Employee {
   managerName: string;
@@ -24,6 +24,8 @@ export interface AccessView extends AccessRequest {
   managerId: string;
   managerName: string;
   isCompleted: boolean;
+  /** Whether this item keeps the employee's onboarding Pending (rule D-018). */
+  keepsOnboardingPending: boolean;
 }
 
 export function buildEmployeeViews(employees: Employee[], requests: AccessRequest[], managers: Manager[]): EmployeeView[] {
@@ -59,6 +61,7 @@ export function buildAccessViews(requests: AccessRequest[], employees: EmployeeV
       managerId: e.managerId,
       managerName: e.managerName,
       isCompleted: isAccessCompleted(r),
+      keepsOnboardingPending: keepsOnboardingPending(r),
     });
   }
   return views;

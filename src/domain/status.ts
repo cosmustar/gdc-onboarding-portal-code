@@ -37,6 +37,7 @@ export const ACCESS_STATUS_RULES: Record<AccessStatus, AccessStatusRule> = {
   Provisioning: { resolution: 'in_progress', tone: 'blue', description: 'Being provisioned in the target system.' },
   Failed: { resolution: 'blocked', tone: 'red', description: 'Provisioning failed. Not treated as completed.' },
   Rejected: { resolution: 'blocked', tone: 'red', description: 'Rejected by an approver. Not treated as completed.' },
+  Expired: { resolution: 'blocked', tone: 'gray', description: 'The request expired before it was approved. Not treated as completed.' },
   Unverifiable: {
     resolution: 'unresolved',
     tone: 'violet',
@@ -56,14 +57,33 @@ export function isAccessCompleted(req: Pick<AccessRequest, 'status' | 'availabil
 export const isAccessOutstanding = (req: AccessRequest) => !isAccessCompleted(req);
 
 /**
- * Onboarding status for one employee, from that employee's IDC request items.
- *  - No items                         → Not Requested in IDC
- *  - All items confirmed complete     → Finished
- *  - Anything else (incl. Failed, Rejected, Unverifiable, unconfirmed Committed) → Pending
+ * ONBOARDING RULE (defined by the GDC Brazil team — see docs/DECISIONS.md D-018).
+ * An access item keeps the employee's onboarding PENDING when it still depends on
+ * approval or on provisioning:
+ *  - Pending Approval        → pending
+ *  - Pending / Provisioning  → pending (approved, provisioning not finished)
+ * Closed for onboarding tracking (do NOT keep it pending):
+ *  - Finished, Committed (approved + provisioned, usable even if not formally closed in IDC)
+ *  - Rejected, Expired: the request is over. IDC leaves "Status Provisioning" as Pending
+ *    by default in these cases, so that Pending is ignored (the CSV reader gives the
+ *    approval result priority — see mapStatus in CsvOnboardingDataService.ts).
+ *  - Failed, Unverifiable
+ */
+export function keepsOnboardingPending(req: Pick<AccessRequest, 'status'>): boolean {
+  return req.status === 'Pending Approval' || req.status === 'Pending' || req.status === 'Provisioning';
+}
+
+/**
+ * Onboarding status for one employee, from ALL of that employee's access items.
+ *  1. No items                                   → Not Requested in IDC
+ *  2. At least one item keeps onboarding pending → Pending
+ *  3. Otherwise                                  → Finished
+ * "Finished" means nothing is pending — not that every access was granted
+ * (there may be Rejected / Failed items).
  */
 export function calculateOnboardingStatus(employeeRequests: AccessRequest[]): OnboardingStatus {
   if (employeeRequests.length === 0) return 'Not Requested in IDC';
-  return employeeRequests.every(isAccessCompleted) ? 'Finished' : 'Pending';
+  return employeeRequests.some(keepsOnboardingPending) ? 'Pending' : 'Finished';
 }
 
 export const ONBOARDING_TONE: Record<OnboardingStatus, Tone> = {

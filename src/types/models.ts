@@ -52,6 +52,7 @@ export type AccessStatus =
   | 'Provisioning'
   | 'Failed'
   | 'Rejected'
+  | 'Expired'
   | 'Committed'
   | 'Unverifiable';
 
@@ -63,6 +64,7 @@ export const ACCESS_STATUSES: readonly AccessStatus[] = [
   'Provisioning',
   'Failed',
   'Rejected',
+  'Expired',
   'Unverifiable',
 ] as const;
 

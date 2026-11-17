@@ -15,16 +15,32 @@ import { formatDate, relativeStartLabel, todayIso } from '../utils/date';
 const FILTER_KEYS = ['q', 'status', 'bu', 'device', 'start'] as const;
 const URL_KEYS = [...FILTER_KEYS, 'view'] as const;
 
+// Long headers may wrap to two lines so the table fits notebook screens.
+const WRAP = '!whitespace-normal';
+
 const COLUMNS: Column<EmployeeView>[] = [
   {
     key: 'name',
     header: 'Employee Name',
     sortValue: (e) => e.fullName,
-    render: (e) => <span className="font-medium text-navy-900">{e.fullName}</span>,
+    // Email sits under the name (instead of its own column) so the table fits notebook screens.
+    render: (e) => (
+      <div>
+        <div className="font-medium text-navy-900">{e.fullName}</div>
+        <div className="text-xs text-slate-500">
+          {/* <wbr> lets long emails break before the "@" only when space is short */}
+          {e.email.split('@')[0]}
+          {e.email.includes('@') && (
+            <>
+              <wbr />@{e.email.split('@').slice(1).join('@')}
+            </>
+          )}
+        </div>
+      </div>
+    ),
   },
   { key: 'lan', header: 'LAN ID', sortValue: (e) => e.lanId, render: (e) => <span className="font-mono text-xs text-slate-600">{e.lanId}</span> },
-  { key: 'email', header: 'Email', sortValue: (e) => e.email, render: (e) => <span className="text-slate-600">{e.email}</span> },
-  { key: 'bu', header: 'Business Unit', sortValue: (e) => e.businessUnit, render: (e) => <BuTag bu={e.businessUnit} /> },
+  { key: 'bu', header: 'Business Unit', headerClassName: WRAP, sortValue: (e) => e.businessUnit, render: (e) => <BuTag bu={e.businessUnit} /> },
   { key: 'title', header: 'Job Title', sortValue: (e) => e.jobTitle, render: (e) => e.jobTitle },
   { key: 'manager', header: 'Manager', sortValue: (e) => e.managerName, render: (e) => e.managerName },
   {
@@ -41,6 +57,7 @@ const COLUMNS: Column<EmployeeView>[] = [
   {
     key: 'device',
     header: 'Desktop / Device',
+    headerClassName: WRAP,
     sortValue: (e) => e.device.deviceName ?? '~',
     render: (e) => (
       <div className="space-y-1">
@@ -49,7 +66,7 @@ const COLUMNS: Column<EmployeeView>[] = [
       </div>
     ),
   },
-  { key: 'status', header: 'Onboarding Status', sortValue: (e) => e.onboardingStatus, render: (e) => <OnboardingBadge status={e.onboardingStatus} /> },
+  { key: 'status', header: 'Onboarding Status', headerClassName: WRAP, sortValue: (e) => e.onboardingStatus, render: (e) => <OnboardingBadge status={e.onboardingStatus} /> },
 ];
 
 const CSV_COLUMNS: CsvColumn<EmployeeView>[] = [

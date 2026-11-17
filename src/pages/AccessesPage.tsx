@@ -27,9 +27,14 @@ const COLUMNS: Column<AccessView>[] = [
     key: 'employee',
     header: 'Employee Name',
     sortValue: (a) => a.employeeName,
-    render: (a) => <span className="whitespace-nowrap font-medium text-navy-900">{a.employeeName}</span>,
+    // LAN ID sits under the name (instead of its own column) so the table fits notebook screens.
+    render: (a) => (
+      <div className="whitespace-nowrap">
+        <div className="font-medium text-navy-900">{a.employeeName}</div>
+        <div className="font-mono text-xs text-slate-500">{a.lanId}</div>
+      </div>
+    ),
   },
-  { key: 'lan', header: 'LAN ID', sortValue: (a) => a.lanId, render: (a) => <span className="font-mono text-xs text-slate-600">{a.lanId}</span> },
   {
     key: 'access',
     header: 'Access Name',

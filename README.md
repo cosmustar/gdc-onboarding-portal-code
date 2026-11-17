@@ -89,13 +89,21 @@ All rules live in **`src/domain/status.ts`**. No component re-implements them.
 | Failed, Rejected | ❌ Blocked (never treated as provisioned) |
 | Unverifiable | ❌ Unresolved until confirmed |
 
+The table above drives the access-level views: the *Pending Accesses* KPI and the *Needs action* / *Completed* filters. Onboarding status uses its own rule, below.
+
 ### Onboarding status (one employee, derived from all of their items)
+
+Evaluated in this order (function `calculateOnboardingStatus`):
 
 | Status | Rule |
 |---|---|
 | **Not Requested in IDC** | The employee has no IDC request items |
-| **Finished** | At least one item, and **every** item counts as completed |
-| **Pending** | At least one item does not count as completed |
+| **Pending** | At least one item keeps onboarding pending: *Pending Approval*, *Pending* or *Provisioning* |
+| **Finished** | Items exist and none keeps onboarding pending. *Finished*, *Committed*, *Rejected*, *Expired*, *Failed* and *Unverifiable* are closed for tracking |
+
+When the approval was *Rejected* or *Expired*, IDC leaves the provisioning status as *Pending* by default. The request is over, so that *Pending* is ignored.
+
+*Finished* means nothing is pending. It does **not** mean every access was granted: there may be Rejected or Failed items.
 
 ### Device assignment
 A non-empty device name shows **Device Assigned**; an empty or null one shows **Not Assigned**. A device name means a device *record* exists. It does **not** prove physical delivery.

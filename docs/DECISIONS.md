@@ -47,6 +47,7 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
 - **Consequências:** é preciso **validar contra a lógica do Power BI** (pendente).
 - **Data:** implementada na Sessão 1 (data não informada), conforme a especificação.
 - **Status:** Aprovada (regra especificada pelo usuário). Alinhamento com o Power BI pendente.
+- **Atualização (2026-11-16):** a parte de **Onboarding Status** desta regra foi **substituída pela D-018**. A regra de acesso concluído (Committed condicional; Failed e Rejected nunca concluídos) continua valendo para o KPI "Pending Accesses", para os filtros "Needs action" e "Completed" e para o selo "Committed · unconfirmed".
 
 ### D-005 — Regra de dispositivo
 - **Solução:** nome preenchido → "Device Assigned"; vazio ou nulo → "Not Assigned". A interface avisa que isso não comprova a entrega física.
@@ -166,3 +167,42 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
   - **Category:** passou a aceitar o valor "Not available" (`src/types/models.ts`).
 - **Data:** 2026-11-16.
 - **Status:** Aprovada (decisão do usuário de usar a exportação). Detalhes do mapeamento: Proposta (implementada).
+
+### D-018 — Nova regra de Onboarding Status (definida pelo usuário)
+- **Necessidade:** o usuário enviou, em 2026-11-16, a especificação "Lógica de Onboarding Status — GDC Brazil", com regras, prioridade e 7 exemplos esperados.
+- **Regra (por colaborador, considerando todos os acessos dele):**
+  1. Sem nenhum acesso → **Not Requested in IDC**.
+  2. Pelo menos um acesso pendente → **Pending**. São pendentes:
+     - Pending Approval;
+     - Pending ou Provisioning (provisionamento não concluído);
+     - Rejected **com** provisionamento Pending.
+  3. Caso contrário → **Finished**. Contam como encerrados:
+     - Finished;
+     - Committed (aprovado e provisionado);
+     - Failed;
+     - Unverifiable;
+     - Rejected sem provisionamento pendente.
+- **Implementação:**
+  - **Regra:** `keepsOnboardingPending` e `calculateOnboardingStatus` em `src/domain/status.ts`.
+  - **Novo campo:** `provisioningPending` em `AccessRequest`. *(Removido na alteração abaixo.)*
+  - **Gaveta do acesso:** mostra o efeito do item no onboarding: "Keeps onboarding pending", "Done for onboarding" ou "Closed for onboarding — access not granted".
+- **Interpretações do desenvolvedor — Proposta (implementada), aguardando validação:**
+  - **Pending e Provisioning** (aprovado, mas ainda provisionando) contam como pendentes. Base: o item "acessos que ainda dependem de alguma ação para finalizar" da especificação.
+  - *(Os dois itens sobre "Rejected com provisionamento Pending" deixaram de valer; ver a alteração abaixo.)*
+- **Fora do escopo** (mantidos pela regra D-004, aguardando decisão do usuário):
+  - KPI "Pending Accesses";
+  - filtros "Needs action" e "Completed";
+  - `COMMITTED_COUNTS_AS_CONFIRMED`, que agora só afeta essas visões de acesso.
+- **Efeito nos dados fictícios:** onboarding passou de Finished 7 / Pending 16 / Not Requested 3 para **10 / 13 / 3**. As contagens foram conferidas por um cálculo independente no teste.
+- **Data:** 2026-11-16.
+- **Status:** Aprovada (regra especificada pelo usuário).
+- **Alteração pedida pelo usuário (2026-11-16):**
+  - **Contexto:** quando "Status Approval" é Rejected (ou "Reject") ou Expired, o IDC deixa "Status Provisioning" como Pending por padrão. Mas a solicitação já está encerrada, porque o aprovador rejeitou ou ela expirou.
+  - **Nova regra:** Rejected e Expired contam **sempre** como encerrados, mesmo com o provisionamento em Pending. Isso **substitui** o item da especificação original que tratava "Rejected + provisionamento Pending" como pendência. O exemplo "5 Finished + 1 Rejected com provisionamento Pending" passa a resultar em **Finished**.
+  - **Implementação:**
+    - novo status de acesso **Expired** (selo cinza; resolução "blocked" nas visões de acesso);
+    - nova lista `STATUS_MAPPING.approvalExpired` no `csvConfig.ts`;
+    - "Reject" adicionado em `approvalRejected`;
+    - o campo `provisioningPending` foi **removido**, porque deixou de ser necessário;
+    - `keepsOnboardingPending` considera pendentes apenas Pending Approval, Pending e Provisioning.
+  - **Valores reais:** os textos exatos de Rejected e Expired no CSV não foram confirmados. As listas incluem variações prováveis.

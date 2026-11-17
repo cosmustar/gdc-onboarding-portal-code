@@ -91,3 +91,73 @@ Ordem cronológica, do mais antigo para o mais recente. As datas vêm de registr
   - **Mensagens de erro na tela** verificadas para "arquivo ausente" e "coluna não encontrada".
   - **Modo fictício:** 46 de 46 testes originais aprovados (executados duas vezes).
   - **Não testado:** com os arquivos reais do Power BI (não disponíveis nesta máquina).
+
+## 2026-11-16 — Tabelas cabem em telas de notebook (B-008)
+- **Motivo:** interpretação equivocada do desenvolvedor de uma pergunta do usuário (ver nota de correção em B-008). A mudança **não foi pedida** e aguarda a decisão do usuário de manter ou reverter. Não foi enviada ao GitHub.
+- **Modificados:**
+  - `src/pages/EmployeesPage.tsx`: e-mail sob o nome; cabeçalhos longos quebram linha;
+  - `src/pages/AccessesPage.tsx`: LAN ID sob o nome;
+  - `src/components/ui/DataTable.tsx`: cabeçalho ordenável alinhado à esquerda.
+- **Testes:**
+  - medição de largura em 5 resoluções;
+  - captura de 1366px inspecionada;
+  - build OK;
+  - 46 de 46 testes, após ajustar o script (T-004).
+
+## 2026-11-16 — Valores longos na página Accesses (B-009)
+- **Motivo:** o usuário relatou que, no notebook da empresa, números longos esticavam a tabela de Accesses.
+- **Modificados:**
+  - `src/pages/AccessesPage.tsx`: largura máxima e quebra de linha nas colunas de texto livre;
+  - `src/services/csv/CsvOnboardingDataService.ts`: espaço após separadores no Access Approval.
+- **Testes:**
+  - reprodução e correção verificadas com dados fictícios longos;
+  - build OK;
+  - 46 de 46 testes.
+  - **Não testado com os dados reais.**
+
+## 2026-11-16 — Paginação limitada (B-010); B-009 revertido
+- **Motivo:** o usuário mostrou, com captura de tela, que o problema em Accesses eram os números da paginação, e não valores longos (B-009 foi um diagnóstico errado).
+- **Modificados:**
+  - `src/components/ui/DataTable.tsx`: paginação com no máximo 7 posições e "…"; botões podem quebrar linha.
+- **Revertidos (B-009):** as alterações de valores longos em `src/pages/AccessesPage.tsx` e `src/services/csv/CsvOnboardingDataService.ts`.
+- **Testes:**
+  - paginação verificada com 3.000 acessos fictícios (250 páginas) em 1366px e 390px;
+  - build OK;
+  - 46 de 46 testes.
+  - **Não testado com os dados reais.**
+
+## 2026-11-16 — Nova regra de Onboarding Status (D-018)
+- **Motivo:** especificação enviada pelo usuário ("Lógica de Onboarding Status — GDC Brazil").
+- **Modificados:**
+  - `src/domain/status.ts`: `keepsOnboardingPending` e o novo `calculateOnboardingStatus`;
+  - `src/types/models.ts`: novo campo `provisioningPending`;
+  - `src/domain/enrich.ts`: `keepsOnboardingPending` em cada acesso;
+  - `src/services/csv/CsvOnboardingDataService.ts`: preenche `provisioningPending`;
+  - `src/components/accesses/AccessDrawer.tsx`: o aviso da gaveta segue a regra nova;
+  - `README.md` e `docs/PROJECT_CONTEXT.md`: descrição da regra.
+- **Não alterados:** o KPI "Pending Accesses" e os filtros de Accesses continuam com a regra D-004.
+- **Testes:**
+  - **Os 7 exemplos da especificação, mais o caso "em provisionamento":** 8 de 8, em modo CSV com arquivos fictícios.
+  - **Gaveta:** 8 de 8.
+  - **Rosca do Overview:** 4 / 3 / 1, como esperado.
+  - **Modo fictício:** novas contagens (10 / 13 / 3, Laura 2) conferidas por cálculo independente; 3 expectativas do script atualizadas.
+  - **Saudação:** a expressão do teste foi corrigida (T-003).
+  - 46 de 46 testes; build OK.
+  - **Não testado com os dados reais.**
+
+## 2026-11-16 — Rejected e Expired encerram a solicitação (alteração da D-018)
+- **Motivo:** o usuário informou que o IDC deixa "Status Provisioning" como Pending por padrão quando a aprovação é Rejected ou Expired. Nesses casos a solicitação já está encerrada e deve contar como Finished.
+- **Modificados:**
+  - `src/types/models.ts`: novo status **Expired**; removido `provisioningPending`;
+  - `src/domain/status.ts`: regra do Expired; `keepsOnboardingPending` simplificado;
+  - `src/components/ui/Badge.tsx`: ícone do Expired;
+  - `src/components/accesses/AccessDrawer.tsx`;
+  - `src/services/csv/csvConfig.ts`: `approvalExpired`; "Reject" em `approvalRejected`;
+  - `src/services/csv/CsvOnboardingDataService.ts`;
+  - `README.md` e `docs/PROJECT_CONTEXT.md`.
+- **Testes:**
+  - **Modo CSV, arquivos fictícios:** 10 de 10 cenários de onboarding. Rejected + Pending, Expired + Pending e "Reject" + Pending resultaram em Finished.
+  - **Gaveta:** 12 de 12; selo e filtro "Expired" verificados por captura.
+  - **Rosca do Overview:** 7 / 2 / 1, como esperado.
+  - **Modo fictício:** contagens inalteradas (10 / 13 / 3), conferidas por cálculo independente; 46 de 46 testes; build OK.
+  - **Não testado com os dados reais.**

@@ -96,7 +96,9 @@ function mapStatus(provisioning: string, approval: string): AccessRequest['statu
   const prov = (Object.keys(STATUS_MAPPING.provisioning) as AccessRequest['status'][]).find((s) =>
     inList(provisioning, STATUS_MAPPING.provisioning[s]),
   );
+  // Rejected / expired approval ends the request, even if IDC still shows provisioning as Pending.
   if (inList(approval, STATUS_MAPPING.approvalRejected)) return 'Rejected';
+  if (inList(approval, STATUS_MAPPING.approvalExpired)) return 'Expired';
   if (prov === 'Finished' || prov === 'Committed' || prov === 'Failed') return prov;
   if (inList(approval, STATUS_MAPPING.approvalPending)) return 'Pending Approval';
   return prov ?? null;

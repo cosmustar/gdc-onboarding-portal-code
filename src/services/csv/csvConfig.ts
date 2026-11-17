@@ -73,7 +73,9 @@ export const BUSINESS_UNIT: {
  * Coloque, em cada lista, os textos EXATOS que aparecem no CSV.
  *
  * Ordem de prioridade:
- *  1. "Status Approval" em `approvalRejected`  → Rejected
+ *  1. "Status Approval" em `approvalRejected` → Rejected; em `approvalExpired` → Expired.
+ *     A solicitação está encerrada: o "Pending" que o IDC deixa por padrão em
+ *     "Status Provisioning" nesses casos é IGNORADO.
  *  2. "Status Provisioning" reconhecido como Finished/Committed/Failed → esse status
  *  3. "Status Approval" em `approvalPending`   → Pending Approval
  *  4. "Status Provisioning" nas demais listas  → esse status
@@ -82,10 +84,12 @@ export const BUSINESS_UNIT: {
 export const STATUS_MAPPING: {
   approvalPending: string[];
   approvalRejected: string[];
+  approvalExpired: string[];
   provisioning: Partial<Record<AccessStatus, string[]>>;
 } = {
   approvalPending: ['Pending', 'Pending Approval', 'Waiting Approval', 'Aguardando Aprovação'],
-  approvalRejected: ['Rejected', 'Denied', 'Rejeitado', 'Negado'],
+  approvalRejected: ['Rejected', 'Reject', 'Denied', 'Rejeitado', 'Negado'],
+  approvalExpired: ['Expired', 'Expire', 'Expirado'],
   provisioning: {
     Finished: ['Finished', 'Completed', 'Complete', 'Success', 'Concluído'],
     Committed: ['Committed'],
