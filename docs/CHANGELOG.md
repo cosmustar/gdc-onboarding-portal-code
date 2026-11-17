@@ -161,3 +161,17 @@ Ordem cronológica, do mais antigo para o mais recente. As datas vêm de registr
   - **Rosca do Overview:** 7 / 2 / 1, como esperado.
   - **Modo fictício:** contagens inalteradas (10 / 13 / 3), conferidas por cálculo independente; 46 de 46 testes; build OK.
   - **Não testado com os dados reais.**
+
+## 2026-11-17 — Menu lateral recolhível em telas grandes
+- **Motivo:** pedido do usuário para o menu lateral não ficar sempre fixo e ganhar espaço na página.
+- **Comportamento:**
+  - **Telas grandes (≥1024px):** o menu continua fixo por padrão. O botão "Hide menu" (ícone no topo do menu) o esconde, e o conteúdo passa a ocupar a largura toda.
+  - **Com o menu escondido:** o botão ☰ do cabeçalho abre o menu por cima da página. Ele fecha ao clicar num item, ao clicar fora ou com Esc. "Keep menu open" volta a fixá-lo.
+  - **Preferência:** fica salva no navegador (`localStorage`, chave `gdc-onboarding.sidebar-pinned.v1`).
+  - **Celular:** sem mudança. O menu continua sobreposto e abre pelo ☰.
+- **Modificados:** `src/components/layout/Sidebar.tsx` e `src/components/layout/AppLayout.tsx`.
+- **Testes:**
+  - 10 de 10 verificações do menu em 1366px e 390px: padrão fixo; esconder; abrir sobreposto; fechar por link, por Esc e por clique fora; preferência lembrada após recarregar; fixar de novo; comportamento no celular;
+  - capturas inspecionadas: com o menu escondido, a tabela de Employees cabe inteira em 1366px (1300px disponíveis);
+  - build OK;
+  - 46 de 46 testes.

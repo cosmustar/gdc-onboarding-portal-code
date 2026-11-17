@@ -1,5 +1,5 @@
 import { Clock3, Lock, Menu, UserRound, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useSession } from '../../context/SessionContext';
@@ -8,19 +8,50 @@ import { formatDateTime } from '../../utils/date';
 import { DemoManagerSwitcher } from './DemoManagerSwitcher';
 import { NAV_ITEMS, Sidebar } from './Sidebar';
 
+const PINNED_KEY = 'gdc-onboarding.sidebar-pinned.v1';
+
+function readPinned(): boolean {
+  try {
+    return localStorage.getItem(PINNED_KEY) !== 'false';
+  } catch {
+    return true;
+  }
+}
+
 export function AppLayout() {
   const [navOpen, setNavOpen] = useState(false);
+  // Large screens: whether the sidebar stays pinned. Remembered in this browser.
+  const [pinned, setPinned] = useState(readPinned);
   const { pathname } = useLocation();
   const page = NAV_ITEMS.find((n) => pathname.startsWith(n.to)) ?? NAV_ITEMS[0];
+
+  const togglePinned = () => {
+    const next = !pinned;
+    setPinned(next);
+    setNavOpen(false);
+    try {
+      localStorage.setItem(PINNED_KEY, String(next));
+    } catch {
+      /* storage unavailable — the choice just isn't remembered */
+    }
+  };
+
+  // Escape closes the overlay menu.
+  useEffect(() => {
+    if (!navOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setNavOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navOpen]);
 
   return (
     <div className="min-h-screen bg-canvas">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">
         Skip to content
       </a>
-      <Sidebar mobileOpen={navOpen} onClose={() => setNavOpen(false)} />
-      <div className="lg:pl-64">
-        <Header title={page.title} subtitle={page.subtitle} onOpenNav={() => setNavOpen(true)} />
+      <Sidebar open={navOpen} onClose={() => setNavOpen(false)} pinned={pinned} onTogglePinned={togglePinned} />
+      <div className={cn('transition-[padding] duration-200', pinned && 'lg:pl-64')}>
+        <Header title={page.title} subtitle={page.subtitle} onOpenNav={() => setNavOpen(true)} menuOnLargeScreens={!pinned} />
         <ScopeStrip />
         <main id="main" className="mx-auto max-w-[1440px] px-4 pb-12 pt-6 sm:px-6 lg:px-8">
           <Outlet />
@@ -30,7 +61,18 @@ export function AppLayout() {
   );
 }
 
-function Header({ title, subtitle, onOpenNav }: { title: string; subtitle: string; onOpenNav: () => void }) {
+function Header({
+  title,
+  subtitle,
+  onOpenNav,
+  menuOnLargeScreens,
+}: {
+  title: string;
+  subtitle: string;
+  onOpenNav: () => void;
+  /** Show the menu button on large screens too (sidebar hidden). */
+  menuOnLargeScreens: boolean;
+}) {
   const { profile } = useSession();
   const { metadata, state } = useData();
   const initials = profile.name
@@ -42,7 +84,12 @@ function Header({ title, subtitle, onOpenNav }: { title: string; subtitle: strin
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 sm:px-6 lg:px-8">
-        <button type="button" onClick={onOpenNav} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-ring lg:hidden" aria-label="Open navigation">
+        <button
+          type="button"
+          onClick={onOpenNav}
+          className={cn('rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-ring', !menuOnLargeScreens && 'lg:hidden')}
+          aria-label="Open navigation"
+        >
           <Menu className="h-5 w-5" />
         </button>
         <div className="min-w-0">

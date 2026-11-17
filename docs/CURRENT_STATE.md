@@ -12,7 +12,7 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 
 ## Implementado (verificado por teste ou inspeção)
 - [x] Rotas `/overview`, `/employees`, `/accesses`; `/` e rotas desconhecidas redirecionam para `/overview`.
-- [x] Sidebar fixa (`#102B4E`), header com última atualização, seletor "Switch Demo User", avatar.
+- [x] Sidebar (`#102B4E`), fixa por padrão e recolhível em telas grandes, header com última atualização, seletor "Switch Demo User", avatar.
 - [x] Faixa de escopo: o admin tem o seletor de gestor (persistido); o gestor tem o selo "Your Team — Nome".
 - [x] Overview:
   - saudação;
@@ -52,12 +52,13 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 - `HttpOnboardingDataService`: não existe.
 
 ## Últimas mudanças
-1. 2026-11-16: nova regra de Onboarding Status definida pelo usuário (D-018). Rejected e Expired encerram a solicitação mesmo com o provisionamento em Pending.
-2. 2026-11-16: paginação limitada a 7 posições (B-010, aguardando validação). B-009 foi revertido (diagnóstico errado).
-3. 2026-11-16: tabelas compactadas para caber em notebooks (B-008).
-4. 2026-11-16: leitura dos CSVs exportados do Power BI (`src/services/csv/`), ativada por `.env.local`. O padrão continua sendo os dados fictícios.
-5. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
-6. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
+1. 2026-11-17: menu lateral recolhível em telas grandes (botão "Hide menu"; ☰ abre o menu sobreposto).
+2. 2026-11-16: nova regra de Onboarding Status definida pelo usuário (D-018). Rejected e Expired encerram a solicitação mesmo com o provisionamento em Pending.
+3. 2026-11-16: paginação limitada a 7 posições (B-010, aguardando validação). B-009 foi revertido (diagnóstico errado).
+4. 2026-11-16: tabelas compactadas para caber em notebooks (B-008).
+5. 2026-11-16: leitura dos CSVs exportados do Power BI (`src/services/csv/`), ativada por `.env.local`. O padrão continua sendo os dados fictícios.
+6. 2026-11-16: criado o sistema de documentação (`docs/` + `CLAUDE.md`). Código não alterado.
+7. 2026-11-15: commit `a7aa926` do usuário, que adicionou "Good night" em `greeting()`.
 
 ## Erros e pendências conhecidos
 - **B-001:** a correção permanente do PATH (`~/.zprofile`) não tem confirmação de que foi aplicada.

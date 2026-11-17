@@ -1,4 +1,4 @@
-import { KeyRound, LayoutDashboard, ShieldAlert, Users, X } from 'lucide-react';
+import { KeyRound, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ShieldAlert, Users, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 
@@ -8,28 +8,59 @@ export const NAV_ITEMS = [
   { to: '/accesses', label: 'Accesses', icon: KeyRound, title: 'Accesses', subtitle: 'Traceability of every access request' },
 ] as const;
 
-export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
+/**
+ * Navigation sidebar.
+ *  - Small screens: always an overlay, opened with the header menu button.
+ *  - Large screens: pinned (pushes the content) by default. It can be hidden
+ *    with "Hide menu"; it then opens as an overlay from the header menu button,
+ *    the same way as on small screens, until it is pinned again.
+ */
+export function Sidebar({
+  open,
+  onClose,
+  pinned,
+  onTogglePinned,
+}: {
+  /** Overlay open (small screens, or large screens while not pinned). */
+  open: boolean;
+  onClose: () => void;
+  /** Large screens only: the sidebar stays visible and pushes the content. */
+  pinned: boolean;
+  onTogglePinned: () => void;
+}) {
   return (
     <>
-      {mobileOpen && <div className="fixed inset-0 z-30 bg-navy-900/40 lg:hidden" onClick={onClose} aria-hidden />}
+      {open && <div className={cn('fixed inset-0 z-30 bg-navy-900/40', pinned && 'lg:hidden')} onClick={onClose} aria-hidden />}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-navy-800 text-slate-300 transition-transform duration-200 lg:translate-x-0',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          'fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-navy-800 text-slate-300 transition-transform duration-200',
+          open ? 'translate-x-0' : '-translate-x-full',
+          pinned && 'lg:translate-x-0',
         )}
         aria-label="Primary"
       >
-        <div className="flex h-16 items-center justify-between gap-3 border-b border-white/10 px-5">
+        <div className="flex h-16 items-center justify-between gap-2 border-b border-white/10 pl-5 pr-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">GDC</div>
             <div className="leading-tight">
               <p className="text-sm font-semibold text-white">GDC Brazil</p>
-              <p className="text-xs text-slate-400">Onboarding Portal</p>
+              <p className="whitespace-nowrap text-xs text-slate-400">Onboarding Portal</p>
             </div>
           </div>
-          <button type="button" className="rounded p-1 text-slate-400 hover:text-white focus-ring lg:hidden" onClick={onClose} aria-label="Close navigation">
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center">
+            <button
+              type="button"
+              className="hidden rounded p-1 text-slate-400 hover:text-white focus-ring lg:inline-flex"
+              onClick={onTogglePinned}
+              aria-label={pinned ? 'Hide menu' : 'Keep menu open'}
+              title={pinned ? 'Hide menu' : 'Keep menu open'}
+            >
+              {pinned ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
+            </button>
+            <button type="button" className={cn('rounded p-1 text-slate-400 hover:text-white focus-ring', pinned && 'lg:hidden')} onClick={onClose} aria-label="Close navigation">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <nav className="flex-1 space-y-1 px-3 py-5">
