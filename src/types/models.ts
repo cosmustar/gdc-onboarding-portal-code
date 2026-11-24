@@ -77,7 +77,10 @@ export interface AccessCatalogItem {
 
 /** One access request item (one access for one employee). Future source: SailPoint IDC. */
 export interface AccessRequest {
+  /** Unique internal key (row key, ?view= link). */
   requestId: string;
+  /** ID shown on screen when it differs from the internal key (CSV mode). */
+  displayRequestId?: string;
   accessId: string;
   accessName: string;
   application: string;

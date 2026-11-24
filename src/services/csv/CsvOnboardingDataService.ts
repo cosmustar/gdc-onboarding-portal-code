@@ -248,6 +248,9 @@ async function loadDataset(): Promise<Dataset> {
     const approver = a(row, 'accessApproval');
     accessRequests.push({
       requestId,
+      // Shown on screen: a numeric ID without its "-<number>" suffix (000072747-1 → 000072747).
+      // IDs like REQ-1001 (prefix is not a number) are kept as they are.
+      displayRequestId: baseId.replace(/^(\d+)-\d+$/, '$1'),
       accessId: slug(group) || 'unknown',
       accessName: group || '(no group)',
       application: group || '(no group)',

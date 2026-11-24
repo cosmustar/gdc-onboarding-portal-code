@@ -105,6 +105,11 @@ export function getDeviceAssignment(employee: Employee): DeviceAssignment {
 }
 
 /** Display rule for the approver column. Never invents a name. */
+/** Request ID as shown to users (the internal key may carry a suffix to stay unique). */
+export function shownRequestId(req: Pick<AccessRequest, 'requestId' | 'displayRequestId'>): string {
+  return req.displayRequestId ?? req.requestId;
+}
+
 export function approverDisplay(req: AccessRequest): { text: string; isPlaceholder: boolean } {
   if (req.status !== 'Pending Approval') return { text: 'Not applicable', isPlaceholder: true };
   if (!req.pendingApprover) return { text: 'Not available', isPlaceholder: true };

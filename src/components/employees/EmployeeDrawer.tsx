@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import type { EmployeeView } from '../../domain/enrich';
+import { shownRequestId } from '../../domain/status';
 import { formatDate, relativeStartLabel } from '../../utils/date';
 import { AccessStatusBadge, DeviceBadge, OnboardingBadge } from '../ui/Badge';
 import { Drawer } from '../ui/Drawer';
@@ -101,7 +102,7 @@ export function EmployeeDrawer({ employee, onClose }: { employee: EmployeeView |
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-navy-900">{a.accessName}</p>
                   <p className="text-xs text-slate-500">
-                    <span className="font-mono">{a.requestId}</span>
+                    <span className="font-mono">{shownRequestId(a)}</span>
                     {a.status === 'Pending Approval' && <> · Approver: {a.pendingApprover ?? <Placeholder>Not available</Placeholder>}</>}
                   </p>
                 </div>

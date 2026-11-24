@@ -195,3 +195,32 @@ Ordem cronológica, do mais antigo para o mais recente. As datas vêm de registr
   - build OK;
   - cálculo independente com os dados fictícios (script compilado com esbuild): KPI 38 → **30** = 18 Pending Approval + 6 Pending + 6 Provisioning; o novo filtro retorna os mesmos 30; o filtro do status bruto "Pending" continua com 6; onboarding sem mudança (10 / 13 / 3).
 - **Não executados:** os testes automáticos de navegador (46 testes). A pasta temporária onde ficavam foi apagada; eles não estavam no projeto (D-016). **Não testado na tela nem com os dados reais.**
+
+## 2026-11-24 — Request ID exibido sem o sufixo "-número"
+- **Motivo:** o usuário viu IDs como `000072747-1` na aba Accesses (dados reais) e pediu que apareça só o ID.
+- **Origem do "-1":** o portal só acrescenta `-2`, `-3`… a IDs repetidos; a primeira ocorrência fica sem sufixo. Hipótese: o "-1" já vem no export do Power BI. **Não confirmado.**
+- **Mudança:**
+  - novo campo opcional `displayRequestId` em `AccessRequest` (`src/types/models.ts`), preenchido só no modo CSV;
+  - regra: ID numérico seguido de "-número" é exibido sem o sufixo (`000072747-1` → `000072747`). IDs com prefixo não numérico (ex.: `REQ-1001`) ficam iguais;
+  - função `shownRequestId` (`src/domain/status.ts`), usada na tabela, na busca, na exportação CSV, no painel do acesso e no painel do colaborador;
+  - o `requestId` interno continua com o sufixo, para manter chaves únicas e o link `?view=`. A ordenação também usa o interno.
+- **Consequência:** linhas do mesmo ID passam a mostrar o mesmo número na tela.
+- **Modificados:** `src/types/models.ts`, `src/services/csv/CsvOnboardingDataService.ts`, `src/domain/status.ts`, `src/pages/AccessesPage.tsx`, `src/components/accesses/AccessDrawer.tsx`, `src/components/employees/EmployeeDrawer.tsx`.
+- **Testes:**
+  - build OK;
+  - leitura do CSV fictício com dois IDs trocados para `000072747-1` (script com esbuild, fora do navegador): exibidos como `000072747`; chaves internas únicas (6 de 6); IDs `REQ-…` intactos.
+- **Não testado na tela nem com os dados reais.**
+
+## 2026-11-24 — Escala de 80% como padrão em notebook e desktop
+- **Motivo:** o usuário vê o portal com zoom de 80% no notebook do trabalho (Dell 14") e pediu que essa visualização seja o padrão.
+- **Mudança:**
+  - `src/index.css`: em telas a partir de 1024px, a fonte base da página (`html`) passa a 80%. Como os tamanhos do app são em `rem`, texto, espaçamentos, menu e tabelas diminuem juntos. Celulares continuam em 100%;
+  - os poucos tamanhos fixos em `px` foram convertidos para `rem` (mesmo tamanho a 100%), para também diminuírem: `max-w-[1440px]`, `min-w-[760px]`, `text-[11px]`, `text-[10px]`, ícones de 18px, `min-h-[48px]`, larguras de selects e da busca, `min-w-[160px]`.
+- **Diferença em relação ao zoom do navegador:** os pontos de quebra do layout (ex.: 1024px) continuam medidos pela largura real da tela, e o menu e os painéis laterais continuam ocupando a altura inteira.
+- **Atenção:** quem continuar com o zoom do navegador em 80% verá a página em 64%. Voltar o zoom para 100% (Ctrl+0).
+- **Modificados:** `src/index.css`, `src/components/ui/primitives.tsx`, `src/components/ui/DataTable.tsx`, `src/components/layout/AppLayout.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/layout/DemoManagerSwitcher.tsx`, `src/pages/AccessesPage.tsx`, `src/pages/EmployeesPage.tsx`.
+- **Testes:**
+  - build OK;
+  - capturas de tela (Chrome headless, 1280×800, dados fictícios) de Overview e Accesses inspecionadas: texto menor, sem cortes; a tabela de Accesses cabe inteira com o menu aberto.
+- **Não testado:** no notebook Dell, com os dados reais, nem em celular. Os testes automáticos de navegador não foram executados (pasta apagada; ver D-016).
+- **Nota de correção (2026-11-24): alteração revertida** a pedido do usuário. No Mac, a página ficou pequena demais; o tamanho padrão deve continuar 100%. Todos os arquivos listados acima voltaram ao estado anterior (a mudança do Request ID em `AccessesPage.tsx` foi mantida). A escala de 80% nunca chegou a ser enviada ao GitHub. Teste após a reversão: build OK.

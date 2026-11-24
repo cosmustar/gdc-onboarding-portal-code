@@ -1,7 +1,7 @@
 import { CheckCircle2, CircleAlert, CircleMinus, UserRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { AccessView } from '../../domain/enrich';
-import { ACCESS_STATUS_RULES, approverDisplay } from '../../domain/status';
+import { ACCESS_STATUS_RULES, approverDisplay, shownRequestId } from '../../domain/status';
 import { formatDateTime } from '../../utils/date';
 import { AccessStatusBadge } from '../ui/Badge';
 import { Drawer } from '../ui/Drawer';
@@ -47,7 +47,7 @@ export function AccessDrawer({ access, onClose }: { access: AccessView | null; o
       title={access.accessName}
       subtitle={
         <span className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-xs">{access.requestId}</span>
+          <span className="font-mono text-xs">{shownRequestId(access)}</span>
           <AccessStatusBadge status={access.status} availabilityConfirmed={access.availabilityConfirmed} />
         </span>
       }
@@ -73,7 +73,7 @@ export function AccessDrawer({ access, onClose }: { access: AccessView | null; o
       <h3 className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-slate-500">Request</h3>
       <DetailGrid
         items={[
-          { label: 'Request ID', value: <span className="font-mono text-xs">{access.requestId}</span> },
+          { label: 'Request ID', value: <span className="font-mono text-xs">{shownRequestId(access)}</span> },
           { label: 'Access ID', value: <span className="font-mono text-xs">{access.accessId}</span> },
           { label: 'Application', value: access.application },
           { label: 'Category', value: access.category },

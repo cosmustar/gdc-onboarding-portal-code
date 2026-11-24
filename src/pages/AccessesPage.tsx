@@ -7,7 +7,7 @@ import { Button, Card, EmptyState, ErrorState, FilterBar, Placeholder, SearchInp
 import { useData } from '../context/DataContext';
 import type { AccessView } from '../domain/enrich';
 import { ACCESS_STATUS_GROUPS, ACCESS_STATUS_SLUGS, matchesAccessStatusFilter, NO_APPROVER, normalize } from '../domain/filters';
-import { approverDisplay } from '../domain/status';
+import { approverDisplay, shownRequestId } from '../domain/status';
 import { useUrlFilters } from '../hooks/useUrlFilters';
 import { BUSINESS_UNITS } from '../types/models';
 import { downloadCsv, type CsvColumn } from '../utils/csv';
@@ -21,7 +21,7 @@ const COLUMNS: Column<AccessView>[] = [
     key: 'request',
     header: 'Request ID',
     sortValue: (a) => a.requestId,
-    render: (a) => <span className="font-mono text-xs font-medium text-navy-900">{a.requestId}</span>,
+    render: (a) => <span className="font-mono text-xs font-medium text-navy-900">{shownRequestId(a)}</span>,
   },
   {
     key: 'employee',
@@ -67,7 +67,7 @@ const COLUMNS: Column<AccessView>[] = [
 ];
 
 const CSV_COLUMNS: CsvColumn<AccessView>[] = [
-  { header: 'Request ID', value: (a) => a.requestId },
+  { header: 'Request ID', value: (a) => shownRequestId(a) },
   { header: 'Employee ID', value: (a) => a.employeeId },
   { header: 'Employee Name', value: (a) => a.employeeName },
   { header: 'LAN ID', value: (a) => a.lanId },
@@ -135,7 +135,7 @@ export function AccessesPage() {
     const q = normalize(values.q);
     return accesses.filter(
       (a) =>
-        (!q || [a.employeeName, a.requestId, a.accessName].some((f) => normalize(f).includes(q))) &&
+        (!q || [a.employeeName, shownRequestId(a), a.accessName].some((f) => normalize(f).includes(q))) &&
         matchesAccessStatusFilter(a, values.status) &&
         (!values.employee || a.employeeId === values.employee) &&
         (!values.bu || a.businessUnit === values.bu) &&
@@ -194,7 +194,7 @@ export function AccessesPage() {
           columns={COLUMNS}
           rows={filtered}
           getRowKey={(a) => a.requestId}
-          rowLabel={(a) => `Open request ${a.requestId} for ${a.employeeName}`}
+          rowLabel={(a) => `Open request ${shownRequestId(a)} for ${a.employeeName}`}
           onRowClick={(a) => setFilter('view', a.requestId)}
           isRowSelected={(a) => a.requestId === values.view}
           loading={state === 'loading'}
