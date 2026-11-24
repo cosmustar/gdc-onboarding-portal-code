@@ -100,14 +100,14 @@ README.md                   instalação, uso, regras e arquitetura futura
 
 | Regra | Definição atual |
 |---|---|
-| **Acesso concluído** (KPI "Pending Accesses" e filtros de Accesses) | `Finished`; ou `Committed` **com** `availabilityConfirmed = true` |
+| **Acesso concluído** (filtros "Needs action"/"Completed" de Accesses) | `Finished`; ou `Committed` **com** `availabilityConfirmed = true` |
 | Acesso não concluído | Pending, Pending Approval, Provisioning, Failed, Rejected, Unverifiable, Committed sem confirmação |
 | **Onboarding "Not Requested in IDC"** | colaborador sem nenhum item de solicitação |
 | **Onboarding "Pending"** | ≥ 1 item pendente: Pending Approval, Pending ou Provisioning (D-018) |
 | **Onboarding "Finished"** | há itens e nenhum está pendente. Finished, Committed, Rejected, Expired, Failed e Unverifiable contam como encerrados. Com aprovação Rejected ou Expired, o "Pending" do provisionamento (padrão do IDC) é ignorado (D-018). Não significa que todos os acessos foram concedidos |
 | **Dispositivo** | nome preenchido → "Device Assigned"; nulo/vazio → "Not Assigned". **Não** comprova entrega física |
 | **Aprovador pendente** | exibido apenas em `Pending Approval`; sem nome → "Not available"; outros status → "Not applicable" |
-| **KPI "Pending Accesses"** | conta **todos os itens não concluídos**, não só o status "Pending". Ver DECISIONS D-009 |
+| **KPI "Pending Accesses"** | desde 2026-11-24: conta os itens que mantêm o onboarding pendente (Pending Approval, Pending, Provisioning), pela regra D-018. Antes: todos os itens não concluídos (D-009) |
 
 ⚠️ Essas regras precisam ser **alinhadas com a lógica existente no Power BI** (pendência registrada em `CURRENT_STATE.md`).
 

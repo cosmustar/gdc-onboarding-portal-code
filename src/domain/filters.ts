@@ -19,6 +19,7 @@ const slugify = (s: string) => s.toLowerCase().replace(/\s+/g, '-');
 
 /** Grouped access filters, offered before the individual raw statuses. */
 export const ACCESS_STATUS_GROUPS: Record<string, { label: string; match: (a: AccessView) => boolean }> = {
+  'onboarding-pending': { label: 'Pending (keeps onboarding pending)', match: (a) => a.keepsOnboardingPending },
   outstanding: { label: 'Needs action (not completed)', match: (a) => !a.isCompleted },
   completed: { label: 'Completed', match: (a) => a.isCompleted },
 };

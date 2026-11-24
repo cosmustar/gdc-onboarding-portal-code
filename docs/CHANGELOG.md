@@ -175,3 +175,23 @@ Ordem cronológica, do mais antigo para o mais recente. As datas vêm de registr
   - capturas inspecionadas: com o menu escondido, a tabela de Employees cabe inteira em 1366px (1300px disponíveis);
   - build OK;
   - 46 de 46 testes.
+
+## 2026-11-17 — Nome do grupo repetido em "Access Name"
+- **Motivo:** o usuário informou que, na página Accesses, o nome do grupo aparecia duas vezes na coluna Access Name (dados reais).
+- **Causa:** no modo CSV, `accessName` e `application` vêm da mesma coluna "Group" (`CsvOnboardingDataService.ts`, linhas 252-253). A célula mostrava os dois.
+- **Correção:** a segunda linha (aplicação) só aparece quando é diferente do nome do acesso. Com os dados fictícios, que têm aplicação própria, nada muda.
+- **Modificado:** `src/pages/AccessesPage.tsx`.
+- **Não alterado:** o painel lateral do acesso continua mostrando o campo "Application" (no modo CSV, igual ao nome do grupo).
+- **Testes:** build OK; 46 de 46 testes (modo fictício). **Não testado no modo CSV nem com os dados reais.**
+
+## 2026-11-24 — KPI "Pending Accesses" segue a regra D-018
+- **Motivo:** o usuário viu, com os dados reais, 498 em "Pending Accesses" e 19 em "awaiting approval", e pediu que o KPI siga a lógica de onboarding que passou.
+- **Mudança:**
+  - o KPI conta só Pending Approval, Pending e Provisioning (antes: tudo que não estava concluído, incluindo Committed, Failed, Rejected, Expired e Unverifiable);
+  - o clique no card abre Accesses com o novo filtro "Pending (keeps onboarding pending)";
+  - a dica de "Total Accesses" diz "closed" em vez de "completed".
+- **Modificados:** `src/domain/enrich.ts`, `src/domain/filters.ts`, `src/pages/OverviewPage.tsx`; documentação: `DECISIONS.md` (D-009, D-018), `PROJECT_CONTEXT.md`, `CURRENT_STATE.md`, `README.md`.
+- **Testes:**
+  - build OK;
+  - cálculo independente com os dados fictícios (script compilado com esbuild): KPI 38 → **30** = 18 Pending Approval + 6 Pending + 6 Provisioning; o novo filtro retorna os mesmos 30; o filtro do status bruto "Pending" continua com 6; onboarding sem mudança (10 / 13 / 3).
+- **Não executados:** os testes automáticos de navegador (46 testes). A pasta temporária onde ficavam foi apagada; eles não estavam no projeto (D-016). **Não testado na tela nem com os dados reais.**

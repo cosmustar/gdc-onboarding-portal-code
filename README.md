@@ -66,7 +66,7 @@ Use the amber **DEMO · Switch Demo User** control in the top bar.
 Switching users clears page filters that may no longer apply (selected employee, approver, open drawer). The demo session is saved in the browser's `localStorage`.
 
 ### Cross-page links
-- *Pending Accesses* KPI → Accesses filtered to items that are not completed.
+- *Pending Accesses* KPI → Accesses filtered to items that keep onboarding pending (Pending Approval, Pending, Provisioning).
 - Donut / legend status → Employees filtered by that onboarding status.
 - Business unit bar → Employees filtered by that BU.
 - Attention items → pending approvals / pending onboardings / upcoming starters without a device.
@@ -89,7 +89,7 @@ All rules live in **`src/domain/status.ts`**. No component re-implements them.
 | Failed, Rejected | ❌ Blocked (never treated as provisioned) |
 | Unverifiable | ❌ Unresolved until confirmed |
 
-The table above drives the access-level views: the *Pending Accesses* KPI and the *Needs action* / *Completed* filters. Onboarding status uses its own rule, below.
+The table above drives the *Needs action* / *Completed* filters. The *Pending Accesses* KPI follows the onboarding rule below. Onboarding status uses its own rule, below.
 
 ### Onboarding status (one employee, derived from all of their items)
 

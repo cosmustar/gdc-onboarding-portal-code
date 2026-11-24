@@ -52,6 +52,8 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 - `HttpOnboardingDataService`: não existe.
 
 ## Últimas mudanças
+1. 2026-11-24: KPI "Pending Accesses" passou a seguir a regra D-018 (só Pending Approval, Pending e Provisioning).
+1. 2026-11-17: "Access Name" deixou de repetir o nome do grupo no modo CSV.
 1. 2026-11-17: menu lateral recolhível em telas grandes (botão "Hide menu"; ☰ abre o menu sobreposto).
 2. 2026-11-16: nova regra de Onboarding Status definida pelo usuário (D-018). Rejected e Expired encerram a solicitação mesmo com o provisionamento em Pending.
 3. 2026-11-16: paginação limitada a 7 posições (B-010, aguardando validação). B-009 foi revertido (diagnóstico errado).
@@ -67,6 +69,7 @@ Rodar localmente: `npm run dev` → `http://localhost:5173`. Antes, é preciso c
 ## Pontos que precisam de validação do usuário
 1. **Regras de onboarding e de acesso concluído** versus a lógica do **Power BI** (D-004).
 2. **KPI "Pending Accesses"** conta todos os itens não concluídos, não só "Pending" (D-009). **Desde a D-018:** o KPI e os filtros de Accesses seguem a regra antiga, e o Onboarding Status segue a nova. Alinhar?
+   - *Nota de 2026-11-24:* o KPI foi alinhado à D-018 a pedido do usuário. Falta confirmar: (a) se Pending e Provisioning devem entrar no KPI ou só Pending Approval; (b) se os filtros "Needs action" e "Completed" também devem seguir a D-018.
 3. **Testes:** versionar no projeto ou manter fora (D-016)?
 4. Decisões marcadas como "Proposta (implementada)" em `DECISIONS.md` (D-006 a D-012), que ainda não têm aprovação explícita.
 5. **Dados reais (D-017):**

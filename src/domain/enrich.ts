@@ -98,7 +98,8 @@ export function computeOverviewMetrics(employees: EmployeeView[], accesses: Acce
     totalAccesses: accesses.length,
     totalEmployees: new Set(employees.map((e) => e.employeeId)).size,
     totalManagers: new Set(employees.map((e) => e.managerId)).size,
-    pendingAccesses: accesses.filter((a) => !a.isCompleted).length,
+    // Rule D-018: only items that keep onboarding pending (Pending Approval, Pending, Provisioning).
+    pendingAccesses: accesses.filter((a) => a.keepsOnboardingPending).length,
     awaitingApproval: accesses.filter((a) => a.status === 'Pending Approval').length,
     onboarding,
     byBusinessUnit: BUSINESS_UNITS.map((bu) => ({

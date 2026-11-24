@@ -85,7 +85,7 @@ export function OverviewPage() {
           icon={KeyRound}
           label="Total Accesses"
           value={metrics.totalAccesses}
-          hint={`${metrics.totalAccesses - metrics.pendingAccesses} completed`}
+          hint={`${metrics.totalAccesses - metrics.pendingAccesses} closed`}
           loading={loading}
           onClick={() => navigate('/accesses')}
         />
@@ -122,7 +122,7 @@ export function OverviewPage() {
           hint={`${metrics.awaitingApproval} awaiting approval`}
           tone="amber"
           loading={loading}
-          onClick={() => navigate('/accesses?status=outstanding')}
+          onClick={() => navigate('/accesses?status=onboarding-pending')}
         />
       </div>
 

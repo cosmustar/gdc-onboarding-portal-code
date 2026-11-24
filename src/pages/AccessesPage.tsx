@@ -42,7 +42,8 @@ const COLUMNS: Column<AccessView>[] = [
     render: (a) => (
       <div className="min-w-[160px]">
         <div className="text-navy-900">{a.accessName}</div>
-        <div className="text-xs text-slate-500">{a.application}</div>
+        {/* In CSV mode both fields come from the "Group" column; skip the repeated line. */}
+        {a.application !== a.accessName && <div className="text-xs text-slate-500">{a.application}</div>}
       </div>
     ),
   },

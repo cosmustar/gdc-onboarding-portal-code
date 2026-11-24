@@ -87,6 +87,7 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
 - **Consequências:** o número **pode divergir de relatórios** que contam só "Pending". **Precisa de validação do usuário e do Power BI.**
 - **Data:** 2026-11-15.
 - **Status:** Proposta (implementada).
+- **Atualização (2026-11-24):** **substituída** pelo pedido do usuário. O KPI passou a contar só os itens que mantêm o onboarding pendente pela regra D-018 (Pending Approval, Pending e Provisioning). Ver a alteração de 2026-11-24 na D-018.
 
 ### D-010 — Trocar de usuário demo limpa os filtros de página
 - **Solução:** `DemoManagerSwitcher` chama `navigate(pathname)` após trocar a sessão. Além disso, a página Accesses descarta os filtros `employee`, `approver` e `view` que não existem no novo escopo.
@@ -192,6 +193,7 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
 - **Fora do escopo** (mantidos pela regra D-004, aguardando decisão do usuário):
   - KPI "Pending Accesses";
   - filtros "Needs action" e "Completed";
+  - *(Nota de 2026-11-24: o KPI "Pending Accesses" saiu desta lista; ver a alteração de 2026-11-24 abaixo.)*
   - `COMMITTED_COUNTS_AS_CONFIRMED`, que agora só afeta essas visões de acesso.
 - **Efeito nos dados fictícios:** onboarding passou de Finished 7 / Pending 16 / Not Requested 3 para **10 / 13 / 3**. As contagens foram conferidas por um cálculo independente no teste.
 - **Data:** 2026-11-16.
@@ -206,3 +208,9 @@ Para decisões da Sessão 1, a justificativa abaixo foi **inferida a partir do c
     - o campo `provisioningPending` foi **removido**, porque deixou de ser necessário;
     - `keepsOnboardingPending` considera pendentes apenas Pending Approval, Pending e Provisioning.
   - **Valores reais:** os textos exatos de Rejected e Expired no CSV não foram confirmados. As listas incluem variações prováveis.
+- **Alteração pedida pelo usuário (2026-11-24) — KPI "Pending Accesses":**
+  - **Contexto:** com os dados reais, o card mostrava 498 pendentes e só 19 aguardando aprovação. O usuário pediu que o KPI siga a lógica de onboarding passada por ele.
+  - **Nova regra:** o KPI conta os itens com `keepsOnboardingPending` (Pending Approval, Pending e Provisioning). Committed, Failed, Rejected, Expired e Unverifiable deixam de contar.
+  - **Implementação:** `computeOverviewMetrics` (`src/domain/enrich.ts`); novo filtro "Pending (keeps onboarding pending)" (`onboarding-pending`, em `src/domain/filters.ts`), aberto pelo clique no card; a dica do card "Total Accesses" passou de "completed" para "closed".
+  - **Interpretação do desenvolvedor — Proposta (implementada), aguardando validação:** o usuário escreveu "somente os que são pending approval conforme a lógica". Foi aplicada a lógica D-018 completa, que inclui Pending e Provisioning. Se o KPI dever contar **só** Pending Approval, o número fica igual à dica "awaiting approval".
+  - **Mantidos pela D-004:** os filtros "Needs action" e "Completed" e o selo "Committed · unconfirmed".
